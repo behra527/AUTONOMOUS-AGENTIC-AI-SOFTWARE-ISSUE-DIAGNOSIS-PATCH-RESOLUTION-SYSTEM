@@ -1,0 +1,50 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_DB: tracepoint
+      POSTGRES_USER: tracepoint
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set a local database password in .env}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U tracepoint]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: .
+    environment: &environment
+      DATABASE_URL: postgresql+psycopg://tracepoint:${POSTGRES_PASSWORD}@db:5432/tracepoint
+      AUTH_MODE: ${AUTH_MODE:-demo}
+      MODEL_MODE: ${MODEL_MODE:-demo}
+      MODEL_BASE_URL: ${MODEL_BASE_URL:-}
+      MODEL_API_KEY: ${MODEL_API_KEY:-}
+      MODEL_NAME: ${MODEL_NAME:-}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-}
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_AUDIENCE: ${OIDC_AUDIENCE:-}
+      OIDC_JWKS_URL: ${OIDC_JWKS_URL:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:-http://127.0.0.1:8000/}
+      OIDC_SCOPE: ${OIDC_SCOPE:-openid profile email}
+    depends_on:
+      db: {condition: service_healthy}
+    command: [python, -m, alembic, upgrade, head]
+  api:
+    build: .
+    environment: *environment
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: ["artifacts:/app/data"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  worker:
+    build: .
+    environment: *environment
+    command: [python, -m, app.worker]
+    volumes: ["artifacts:/app/data"]
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+volumes:
+  postgres:
+  artifacts:

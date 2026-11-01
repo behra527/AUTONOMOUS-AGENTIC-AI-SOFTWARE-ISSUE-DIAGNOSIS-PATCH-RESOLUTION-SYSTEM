@@ -1,0 +1,27 @@
+{
+  "benchmark": "three-fixture lexical localization smoke test",
+  "commit": "b5d60b4e0371ac586f75fe2c7e062482a8fad925",
+  "retrieval": "lexical",
+  "cases": [
+    {
+      "query": "PDF upload exceeds size limit ValueError",
+      "expected": "upload.py:validate_pdf_upload",
+      "rank": 1,
+      "hit_at_3": true
+    },
+    {
+      "query": "calculate total percentage discount subtotal incorrect",
+      "expected": "pricing.py:calculate_total",
+      "rank": 1,
+      "hit_at_3": true
+    },
+    {
+      "query": "display name profile missing key",
+      "expected": "users.py:display_name",
+      "rank": 1,
+      "hit_at_3": true
+    }
+  ],
+  "hit_at_3": 1.0,
+  "limitations": "Tiny synthetic fixture; not production accuracy, diagnosis quality, or patch success."
+}

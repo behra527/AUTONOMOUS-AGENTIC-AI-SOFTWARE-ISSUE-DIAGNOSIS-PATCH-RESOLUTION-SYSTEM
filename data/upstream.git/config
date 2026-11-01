@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = false
+	bare = true
+	symlinks = false
+	ignorecase = true
+[remote "origin"]
+	url = https://github.com/behra527/AUTONOMOUS-AGENTIC-AI-SOFTWARE-ISSUE-DIAGNOSIS-PATCH-RESOLUTION-SYSTEM.git
